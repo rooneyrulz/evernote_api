@@ -17,20 +17,55 @@ const server = createServer(app);
 
 if (process.env.NODE_ENV === 'development') app.use(logger('dev'));
 
+const notes = [];
+
 app.use(
     '/graphql',
     graphqlHTTP({
         schema: buildSchema(`
-          type RootQuery {}
+          type Note {
+            _id: ID
+            title: String!
+            content: String!
+            private: Boolean!
+            date: String!
+          }
+
+          input NoteInput {
+            title: String!
+            content: String!
+            private: Boolean!
+            date: String!
+          }
+
+          type RootQuery {
+            notes: [Note!]!
+          }
           
-          type RootMutation {}
+          type RootMutation {
+            createNote(noteInput: NoteInput): Note
+          }
 
           schema {
             query: RootQuery
             mutation: RootMutation
           }
         `),
-        rootValue: {},
+        rootValue: {
+            notes: () => notes,
+
+            createNote: (args) => {
+                const newNote = {
+                    title: args.noteInput.title,
+                    content: args.noteInput.content,
+                    private: args.noteInput.private,
+                    date: args.noteInput.date,
+                };
+                notes.push(newNote);
+                return newNote;
+            },
+        },
+        graphiql: true,
     })
 );
 
