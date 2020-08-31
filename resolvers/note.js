@@ -2,7 +2,8 @@
 const Note = require('../models/Note');
 
 module.exports = {
-    notes: async() => {
+    notes: async(req) => {
+        if (!req.isAuth) throw new Error('Unauthorized!');
         try {
             const notes = await Note.find().lean();
             return notes;
@@ -11,7 +12,8 @@ module.exports = {
         }
     },
 
-    createNote: async(args) => {
+    createNote: async(args, req) => {
+        if (!req.isAuth) throw new Error('Unauthorized!');
         const { title, content, private } = args.noteInput;
         try {
             const newNote = await new Note({
