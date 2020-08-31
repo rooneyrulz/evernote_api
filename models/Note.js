@@ -13,6 +13,10 @@ const noteSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
     },
+    creator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
     date: {
         type: Date,
         default: Date.now,

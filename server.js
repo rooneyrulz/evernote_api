@@ -21,8 +21,6 @@ const server = createServer(app);
 
 if (process.env.NODE_ENV === 'development') app.use(logger('dev'));
 
-const notes = [];
-
 app.use(
     '/graphql',
     graphqlHTTP({
