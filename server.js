@@ -26,10 +26,19 @@ app.use(
     graphqlHTTP({
         schema: buildSchema(`
           type Note {
-            _id: ID
+            _id: ID!
             title: String!
             content: String!
             private: Boolean!
+            creator: User!
+            date: String!
+          }
+
+          type User {
+            _id: ID!
+            email: String!
+            password: String
+            createdNotes: [Note!]
             date: String!
           }
 
@@ -39,12 +48,18 @@ app.use(
             private: Boolean!
           }
 
+          input UserInput {
+            email: String!
+            password: String!
+          }
+
           type RootQuery {
             notes: [Note!]!
           }
           
           type RootMutation {
             createNote(noteInput: NoteInput): Note
+            createUser(userInput: UserInput): User
           }
 
           schema {
@@ -74,6 +89,8 @@ app.use(
                     throw error;
                 }
             },
+
+            createUser: async() => {},
         },
         graphiql: true,
     })
