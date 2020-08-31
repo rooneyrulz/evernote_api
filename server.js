@@ -10,6 +10,9 @@ const { buildSchema } = require('graphql');
 
 require('colors');
 
+// MODELS
+const Note = require('./models/Note');
+
 // Load .ENV
 dotenv.config({ path: './config/config.env' });
 
@@ -36,7 +39,6 @@ app.use(
             title: String!
             content: String!
             private: Boolean!
-            date: String!
           }
 
           type RootQuery {
@@ -53,17 +55,26 @@ app.use(
           }
         `),
         rootValue: {
-            notes: () => notes,
+            notes: async() => {
+                try {
+                    const notes = await Note.find().lean();
+                    return notes;
+                } catch (error) {
+                    throw error;
+                }
+            },
 
-            createNote: (args) => {
-                const newNote = {
-                    title: args.noteInput.title,
-                    content: args.noteInput.content,
-                    private: args.noteInput.private,
-                    date: args.noteInput.date,
-                };
-                notes.push(newNote);
-                return newNote;
+            createNote: async(args) => {
+                try {
+                    const newNote = await new Note({
+                        title: args.noteInput.title,
+                        content: args.noteInput.content,
+                        private: args.noteInput.private,
+                    }).save();
+                    return newNote;
+                } catch (error) {
+                    throw error;
+                }
             },
         },
         graphiql: true,
@@ -87,7 +98,7 @@ async function initMongoConnection() {
                 console.log(
                     `Server running on ${process.env.NODE_ENV} port ${
             process.env.PORT || 5000
-          }`.yellow
+          }..`.yellow
                 )
             );
         }
