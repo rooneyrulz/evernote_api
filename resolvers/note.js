@@ -3,7 +3,6 @@ const Note = require('../models/Note');
 
 module.exports = {
     notes: async(req) => {
-        if (!req.isAuth) throw new Error('Unauthorized!');
         try {
             const notes = await Note.find().lean();
             return notes;
@@ -20,6 +19,7 @@ module.exports = {
                 title,
                 content,
                 private,
+                creator: req.user,
             }).save();
             return newNote;
         } catch (error) {
