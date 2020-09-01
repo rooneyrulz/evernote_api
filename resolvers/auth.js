@@ -4,6 +4,9 @@ const { sign } = require('jsonwebtoken');
 // MODELS
 const User = require('../models/User');
 
+// Helpers
+const { getNotes } = require('../helpers');
+
 module.exports = {
     createUser: async(args) => {
         const { email, password } = args.userInput;
@@ -23,7 +26,14 @@ module.exports = {
             const token = sign({ id: newUser._id }, process.env.JWT_SECRET, {
                 expiresIn: 360000,
             });
-            return { token, user: newUser };
+            return {
+                token,
+                user: {
+                    ...newUser._doc,
+                    _id: newUser.id,
+                    createdNotes: getNotes(newUser.id),
+                },
+            };
         } catch (error) {
             throw error;
         }
@@ -39,7 +49,14 @@ module.exports = {
             const token = sign({ id: user._id }, process.env.JWT_SECRET, {
                 expiresIn: 360000,
             });
-            return { token, user };
+            return {
+                token,
+                user: {
+                    ...user._doc,
+                    _id: user.id,
+                    createdNotes: getNotes(user.id),
+                },
+            };
         } catch (error) {
             throw error;
         }

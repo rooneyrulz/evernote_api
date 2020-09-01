@@ -1,10 +1,13 @@
 // Models
 const Note = require('../models/Note');
 
+// Helpers
+const { getUser } = require('../helpers');
+
 module.exports = {
     notes: async(req) => {
         try {
-            const notes = await Note.find().lean();
+            const notes = await Note.find().populate('creator').lean();
             return notes;
         } catch (error) {
             throw error;
@@ -21,7 +24,11 @@ module.exports = {
                 private,
                 creator: req.user,
             }).save();
-            return newNote;
+            return {
+                ...newNote._doc,
+                _id: newNote.id,
+                creator: getUser(req.user),
+            };
         } catch (error) {
             throw error;
         }
