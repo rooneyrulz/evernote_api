@@ -37,12 +37,12 @@ input UserInput {
 
 type RootQuery {
   notes: [Note!]!
+  loginUser(userInput: UserInput): AuthData
 }
 
 type RootMutation {
   createNote(noteInput: NoteInput): Note
   createUser(userInput: UserInput): AuthData
-  loginUser(userInput: UserInput): AuthData
 }
 
 schema {
